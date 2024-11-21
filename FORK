@@ -1,0 +1,66 @@
+#include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+
+int arr[1000];
+int n;
+
+void ascending_sort(int p, int n) {
+    printf("\t\t\t\tAscending sort\n");
+    for (int i = 1; i < n; ++i) {
+        int key = arr[i];
+        int j = i - 1;
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j = j - 1;
+        }
+        arr[j + 1] = key;
+    }
+    for (int i = 0; i < n; i++) {
+        sleep(1); 
+        printf("\t\t\t\ti=%d , p=%d , pid=%d , ppid=%d \n", arr[i], p, getpid(), getppid());
+    }
+}
+
+void descending_sort(int p, int n) {
+    printf("Descending sort\n");
+    for (int i = 0; i < n; i++) 
+    {
+        for (int j = i; j < n; j++) {
+            if (arr[i] < arr[j]) {
+                int t = arr[i];
+                arr[i] = arr[j];
+                arr[j] = t;
+            }
+        }
+    }
+    for (int i = 0; i < n; i++) {
+        sleep(5); 
+         wait();
+        printf("i=%d,p=%d,pid=%d,ppid=%d\n", arr[i], p, getpid(), getppid());
+    }
+}
+int main() {
+    int p = 1000;
+    printf("Enter the size of array:\n");
+    scanf("%d", &n);
+    
+    printf("Enter the elements:\n");
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &arr[i]);
+    }
+
+    p = fork(); 
+
+    if (p == 0) 
+    {
+        //child process
+        ascending_sort(p, n);
+    } 
+    else 
+    {
+        //parent process 
+        descending_sort(p, n);
+    }
+    return 0;
+}
