@@ -1,3 +1,7 @@
+ritesh raina
+122b1f106
+
+
 #include <stdio.h>
 
 #define FRAME_COUNT 3
@@ -107,6 +111,80 @@ void lrcPageReplacement(int pages[], int n) {
     printf("Hit Frequency: %.2f%%\n", (float)hits / n * 100);
 }
 
+void optimalPageReplacement(int pages[], int n) {
+    int frames[FRAME_COUNT];
+    int pageFaults = 0;
+
+    for (int i = 0; i < FRAME_COUNT; i++) {
+        frames[i] = -1;
+    }
+
+    printf("Optimal Pages\tFrames\n");
+
+    for (int i = 0; i < n; i++) {
+        int page = pages[i];
+        int pageFound = 0;
+
+        // Check if the page is already in a frame
+        for (int j = 0; j < FRAME_COUNT; j++) {
+            if (frames[j] == page) {
+                pageFound = 1;
+                break;
+            }
+        }
+
+        // If page is not found in frames, replace one
+        if (!pageFound) {
+            int replaceIndex = -1;
+            int farthestIndex = i + 1;
+
+            // Find an empty frame
+            for (int j = 0; j < FRAME_COUNT; j++) {
+                if (frames[j] == -1) {
+                    replaceIndex = j;
+                    break;
+                }
+            }
+
+            // If no empty frame, find the optimal frame to replace
+            if (replaceIndex == -1) {
+                for (int j = 0; j < FRAME_COUNT; j++) {
+                    int nextUse = -1;
+                    for (int k = i + 1; k < n; k++) {
+                        if (pages[k] == frames[j]) {
+                            nextUse = k;
+                            break;
+                        }
+                    }
+
+                    if (nextUse == -1) { // Page not used again
+                        replaceIndex = j;
+                        break;
+                    } else if (nextUse > farthestIndex) { // Farthest use
+                        farthestIndex = nextUse;
+                        replaceIndex = j;
+                    }
+                }
+            }
+
+            frames[replaceIndex] = page;
+            pageFaults++;
+        }
+
+        printf("%d\t\t", page);
+        for (int j = 0; j < FRAME_COUNT; j++) {
+            if (frames[j] != -1) {
+                printf("%d ", frames[j]);
+            }
+        }
+        printf("\n");
+    }
+
+    printf("Total Page Faults (Optimal): %d\n", pageFaults);
+    int hits = n - pageFaults;
+    printf("Fault Frequency: %.2f%%\n", (float)pageFaults / n * 100);
+    printf("Hit Frequency: %.2f%%\n", (float)hits / n * 100);
+}
 
 int main() {
     int n, ans, ch;
@@ -122,7 +200,7 @@ int main() {
 
     do {
         printf("Enter which algorithm you would like to implement:\n");
-        printf("1 - FIFO\n2 - LRU\n");
+        printf("1 - FIFO\n2 - LRU\n3 - Optimal\n");
         scanf("%d", &ch);
 
         switch (ch) {
@@ -131,6 +209,9 @@ int main() {
                 break;
             case 2:
                 lrcPageReplacement(pages, n);
+                break;
+            case 3:
+                optimalPageReplacement(pages, n);
                 break;
             default:
                 printf("Invalid choice!\n");
@@ -143,3 +224,58 @@ int main() {
 
     return 0;
 }
+
+output:
+Enter number of pages: 6
+Enter page value: 7 2 1 2 5 3
+Enter page value: Enter page value: Enter page value: Enter page value: Enter page value: Enter which algorithm you would like to implement:
+1 - FIFO
+2 - LRU
+3 - Optimal
+1
+FIFO Pages	Frames
+7		7 
+2		7 2 
+1		7 2 1 
+2		7 2 1 
+5		5 2 1 
+3		5 3 1 
+Total Page Faults: 5
+Fault Frequency: 83.33%
+Hit Frequency: 16.67%
+Do you like to continue? (1 - yes, 0 - no): 1
+Enter which algorithm you would like to implement:
+1 - FIFO
+2 - LRU
+3 - Optimal
+2
+LRU Pages	Frames
+7		7 - - 
+2		7 2 - 
+1		7 2 1 
+2		7 2 1 
+5		5 2 1 
+3		5 2 3 
+Total Page Faults (LRU): 5
+Fault Frequency: 83.33%
+Hit Frequency: 16.67%
+Do you like to continue? (1 - yes, 0 - no): 1
+Enter which algorithm you would like to implement:
+1 - FIFO
+2 - LRU
+3 - Optimal
+3
+Optimal Pages	Frames
+7		7 
+2		7 2 
+1		7 2 1 
+2		7 2 1 
+5		5 2 1 
+3		3 2 1 
+Total Page Faults (Optimal): 5
+Fault Frequency: 83.33%
+Hit Frequency: 16.67%
+Do you like to continue? (1 - yes, 0 - no): 0
+
+
+=== Code Execution Successful ===
