@@ -17,7 +17,7 @@ void * writef(void * a){
     while(i<3){
         sem_wait(&sem);
         s=s+5;
-        printf("Writer %d is writing %d \n",i,s);
+        printf("Writer %d is writing %d \n",r,s);
         sem_post(&sem);
         sleep(rand()%10);
         i++;
@@ -36,7 +36,7 @@ void * readf(void * a){
             sem_wait(&sem);
         }
         pthread_mutex_unlock(&x);
-        printf("\t\t Reader %d is reading %d \n",i,s);
+        printf("\t\t Reader %d is reading %d \n",r,s);
         pthread_mutex_lock(&x);
         readcount--;
         if(readcount==0){
